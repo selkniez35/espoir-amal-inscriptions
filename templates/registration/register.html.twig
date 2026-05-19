@@ -1,23 +1,75 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Création de votre compte{% endblock %}
 
 {% block body %}
-    {% for flash_error in app.flashes('verify_email_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
 
-    <h1>Register</h1>
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
 
-    {{ form_errors(registrationForm) }}
+                    <h2 class="text-center mb-2">Création de compte</h2>
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+                    <p class="text-center text-muted mb-4">
+                        Créer votre compte pour inscrire votre enfant facilement
+                    </p>
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+                    {# Erreurs globales #}
+                    {% for flash_error in app.flashes('verify_email_error') %}
+                        <div class="alert alert-danger">
+                            {{ flash_error }}
+                        </div>
+                    {% endfor %}
+
+                    {{ form_start(registrationForm) }}
+
+                        {# EMAIL #}
+                        {{ form_row(registrationForm.email, {
+                            label: 'Email'
+                        }) }}
+
+                        {# PRÉNOM #}
+                        {{ form_row(registrationForm.firstName, {
+                            label: 'Prénom'
+                        }) }}
+
+                        {# NOM #}
+                        {{ form_row(registrationForm.lastName, {
+                            label: 'Nom'
+                        }) }}
+
+                        {# MOT DE PASSE #}
+                        {{ form_row(registrationForm.plainPassword, {
+                            label: 'Mot de passe'
+                        }) }}
+
+                        {# AGREE TERMS (IMPORTANT) #}
+                        <div class="form-check mb-3">
+                           {{ form_row(registrationForm.agreeTerms, {
+                                label: "J'accepte les conditions d'utilisation"
+                            }) }}
+                        </div>
+
+                        {# SUBMIT #}
+                        <button type="submit" class="btn btn-primary w-100 py-2 mt-2">
+                            Créer mon compte
+                        </button>
+
+                    {{ form_end(registrationForm) }}
+
+                    <hr class="my-4">
+
+                    <p class="text-center text-muted small">
+                        Déjà un compte ?
+                        <a href="{{ path('app_login') }}">Se connecter</a>
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 {% endblock %}
