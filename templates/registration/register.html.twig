@@ -16,13 +16,6 @@
                         Créer votre compte pour inscrire votre enfant facilement
                     </p>
 
-                    {# Erreurs globales #}
-                    {% for flash_error in app.flashes('verify_email_error') %}
-                        <div class="alert alert-danger">
-                            {{ flash_error }}
-                        </div>
-                    {% endfor %}
-
                     {{ form_start(registrationForm) }}
 
                         {# EMAIL #}
