@@ -3,109 +3,74 @@
 {% block title %}Connexion{% endblock %}
 
 {% block body %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-7 col-lg-5">
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
 
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body p-4">
+    <div class="card shadow-sm border-0 p-4" style="width: 100%; max-width: 420px;">
 
-                    <h2 class="text-center mb-2">Connexion</h2>
+        <h2 class="text-center mb-2">Connexion</h2>
+        <p class="text-center text-muted mb-4">
+            Accédez à votre espace d’inscription
+        </p>
 
-                    <p class="text-center text-muted mb-4">
-                        Connectez-vous à votre espace parent
-                    </p>
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
 
-                    {% if error %}
-                        <div class="alert alert-danger">
-                            Email ou mot de passe incorrect.
-                        </div>
-                    {% endif %}
+        {% if app.user %}
+            <div class="alert alert-info">
+                Connecté en tant que {{ app.user.userIdentifier }}
+                <a href="{{ path('app_logout') }}" class="ms-2">Déconnexion</a>
+            </div>
+        {% endif %}
 
-                    {% if app.user %}
-                        <div class="alert alert-success">
-                            Vous êtes connecté en tant que
-                            <strong>{{ app.user.email }}</strong>
-                        </div>
+        <form method="post">
 
-                        <a href="{{ path('app_logout') }}"
-                           class="btn btn-outline-danger w-100 mb-3">
-                            Se déconnecter
-                        </a>
-                    {% endif %}
-
-                    <form method="post">
-
-                        <div class="mb-3">
-                            <label for="inputEmail" class="form-label">
-                                Email
-                            </label>
-
-                            <input
-                                type="email"
-                                value="{{ last_username }}"
-                                name="email"
-                                id="inputEmail"
-                                class="form-control"
-                                autocomplete="email"
-                                required
-                                autofocus
-                            >
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="inputPassword" class="form-label">
-                                Mot de passe
-                            </label>
-
-                            <input
-                                type="password"
-                                name="password"
-                                id="inputPassword"
-                                class="form-control"
-                                autocomplete="current-password"
-                                required
-                            >
-                        </div>
-
-                        <input
-                            type="hidden"
-                            name="_csrf_token"
-                            value="{{ csrf_token('authenticate') }}"
-                        >
-
-                        <div class="form-check mb-4">
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                name="_remember_me"
-                                id="remember_me"
-                            >
-
-                            <label class="form-check-label" for="remember_me">
-                                Se souvenir de moi
-                            </label>
-                        </div>
-
-                        <button class="btn btn-primary w-100 py-2" type="submit">
-                            Se connecter
-                        </button>
-
-                    </form>
-
-                    <hr class="my-4">
-
-                    <p class="text-center text-muted small mb-0">
-                        Pas encore de compte ?
-                        <a href="{{ path('app_register') }}">
-                            Créer un compte
-                        </a>
-                    </p>
-
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ last_username }}"
+                    class="form-control"
+                    required
+                    autofocus
+                >
             </div>
 
-        </div>
+            <div class="mb-3">
+                <label class="form-label">Mot de passe</label>
+                <input
+                    type="password"
+                    name="password"
+                    class="form-control"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="_remember_me" id="remember_me">
+                <label class="form-check-label" for="remember_me">
+                    Se souvenir de moi
+                </label>
+            </div>
+
+            <button class="btn btn-primary w-100 py-2">
+                Se connecter
+            </button>
+
+        </form>
+
+        <hr class="my-4">
+
+        <p class="text-center text-muted small">
+            Pas encore de compte ?
+            <a href="{{ path('app_register') }}">Créer un compte</a>
+        </p>
     </div>
 </div>
 {% endblock %}
