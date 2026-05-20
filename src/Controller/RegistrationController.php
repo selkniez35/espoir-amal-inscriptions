@@ -18,15 +18,17 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Repository\UserRepository;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
+    public function __construct(private UserRepository $userRepository)   
     {
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EmailVerifier $emailVerifier, UrlGeneratorInterface $urlGenerator): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user);
@@ -39,11 +41,10 @@ class RegistrationController extends AbstractController
             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $this->userRepository->save($user);
 
             // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+            $emailVerifier->sendEmailConfirmation('app_verify_email', $user,
                 (new TemplatedEmail())
                     ->from(new Address('sam.elkniez@gmail.com', 'TEST ESPOIRAMAL'))
                     ->to((string) $user->getEmail())
@@ -52,7 +53,7 @@ class RegistrationController extends AbstractController
             );
 
             if (!$user->isVerified()) {
-                return new RedirectResponse($this->urlGenerator->generate('app_check_email'));
+                return new RedirectResponse($urlGenerator->generate('app_check_email'));
             }
         }
 
@@ -67,7 +68,7 @@ class RegistrationController extends AbstractController
             // récupère user via lien signé, PAS via session
             $userId = $request->query->get('id');
 
-            $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+            $user = $this->userRepository->find($userId);
 
             if (!$user) {
                 throw $this->createNotFoundException();
