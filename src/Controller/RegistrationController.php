@@ -28,23 +28,30 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EmailVerifier $emailVerifier, UrlGeneratorInterface $urlGenerator): Response
+    public function register(
+    Request $request,
+    UserPasswordHasherInterface $userPasswordHasher,
+    EmailVerifier $emailVerifier,
+    UrlGeneratorInterface $urlGenerator
+    ): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
+
             $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            $user->setPassword(
+                $userPasswordHasher->hashPassword($user, $plainPassword)
+            );
 
             $this->userRepository->save($user);
 
-            // generate a signed url and email it to the user
-            $emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+            $emailVerifier->sendEmailConfirmation(
+                'app_verify_email',
+                $user,
                 (new TemplatedEmail())
                     ->from(new Address('sam.elkniez@gmail.com', 'TEST ESPOIRAMAL'))
                     ->to((string) $user->getEmail())
@@ -52,13 +59,14 @@ class RegistrationController extends AbstractController
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
-            if (!$user->isVerified()) {
-                return new RedirectResponse($urlGenerator->generate('app_check_email'));
-            }
+            $this->addFlash('success', 'Compte créé. Vérifie ton email.');
+
+            return $this->redirectToRoute('app_login');
         }
 
+        // 🔥 IMPORTANT : retour normal si pas submit ou invalide
         return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form,
+            'registrationForm' => $form->createView(),
         ]);
     }
 

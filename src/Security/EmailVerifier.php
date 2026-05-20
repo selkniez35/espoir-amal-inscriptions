@@ -19,7 +19,6 @@ class EmailVerifier
         private UserRepository $userRepository,
     ) {
     }
-
     public function sendEmailConfirmation(string $verifyEmailRouteName, User $user, TemplatedEmail $email): void
     {
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
