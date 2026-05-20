@@ -15,7 +15,7 @@ class EmailVerifier
     public function __construct(
         private VerifyEmailHelperInterface $verifyEmailHelper,
         private MailerInterface $mailer,
-        private EntityManagerInterface $entityManager,
+        private userRepository $userRepository,
     ) {
     }
 
@@ -46,7 +46,6 @@ class EmailVerifier
 
         $user->setIsVerified(true);
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->userRepository->save($user);
     }
 }

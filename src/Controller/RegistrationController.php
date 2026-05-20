@@ -50,9 +50,9 @@ class RegistrationController extends AbstractController
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
-            // do anything else you need here, like send an email
-
-            return $security->login($user, AppAuthenticator::class, 'main');
+            if (!$user->isVerified()) {
+                return new RedirectResponse($this->urlGenerator->generate('app_check_email'));
+            }
         }
 
         return $this->render('registration/register.html.twig', [
@@ -61,24 +61,26 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator): Response
-    {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        // validate email confirmation link, sets User::isVerified=true and persists
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator): Response {
         try {
-            /** @var User $user */
-            $user = $this->getUser();
+            // récupère user via lien signé, PAS via session
+            $userId = $request->query->get('id');
+
+            $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+
+            if (!$user) {
+                throw $this->createNotFoundException();
+            }
+
             $this->emailVerifier->handleEmailConfirmation($request, $user);
+
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
-
-            return $this->redirectToRoute('app_register');
+            return $this->redirectToRoute('app_login');
         }
 
-        // @TODO Change the redirect on success and handle or remove the flash message in your templates
-        $this->addFlash('success', 'Your email address has been verified.');
+        $this->addFlash('success', 'Email vérifié avec succès.');
 
-        return $this->redirectToRoute('app_register');
+        return $this->redirectToRoute('app_login');
     }
 }
