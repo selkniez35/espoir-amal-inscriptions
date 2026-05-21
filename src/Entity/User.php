@@ -7,12 +7,16 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Enum\UserRole;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_USER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -41,10 +45,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Course::class)]
+    private Collection $courses;
+
     public function __construct()
     {
         $this->roles = [UserRole::USER->value];
         $this->createdAt = new \DateTimeImmutable();
+        $this->courses = new ArrayCollection();
     }
 
     // -------------------------
@@ -153,7 +161,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function isAdmin(): bool
-{
-    return in_array(UserRole::ADMIN->value, $this->roles, true);
-}
+    {
+        return in_array(UserRole::ADMIN->value, $this->roles, true);
+    }
+
+    public function fullName(): string
+    {
+        return trim($this->firstName . ' ' . $this->lastName);
+    }
 }

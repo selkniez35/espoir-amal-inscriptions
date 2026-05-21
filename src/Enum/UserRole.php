@@ -4,7 +4,7 @@ namespace App\Enum;
 
 enum UserRole: string
 {
-    case USER = UserRole::USER->value;
+    case USER = 'ROLE_USER';
 
-    case ADMIN = UserRole::ADMIN->value;
+    case ADMIN = 'ROLE_ADMIN';
 }

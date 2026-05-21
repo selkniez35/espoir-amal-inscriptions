@@ -12,12 +12,26 @@ class CourseType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title')
-            ->add('description')
-            ->add('level')
-            ->add('price')
-            ->add('scheadule')
-        ;
+            ->add('title', null, [
+                'label' => 'Titre',
+            ])
+            ->add('description', null, [
+                'label' => 'Description',
+            ])
+            ->add('level', null, [
+                'label' => 'Niveau',
+            ])
+            ->add('price', null, [
+                'label' => 'Prix',
+            ])
+            ->add('createdAt', null, [
+                'label' => 'Date de création',
+                'widget' => 'single_text',
+            ])
+             ->add('createdBy', null, [
+                'label' => 'Créé par',
+            ])
+         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

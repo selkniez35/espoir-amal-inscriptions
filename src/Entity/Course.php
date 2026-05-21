@@ -26,8 +26,12 @@ class Course
     #[ORM\Column]
     private ?float $price = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $scheadule = null;
+    #[ORM\Column(type: 'datetime_immutable')]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'courses')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $createdBy = null;
 
     public function getId(): ?int
     {
@@ -82,10 +86,10 @@ class Course
         return $this;
     }
 
-    public function getScheadule(): ?string
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->scheadule;
-    }
+        return $this->createdAt;
+    } 
 
     public function setScheadule(string $scheadule): static
     {
@@ -93,4 +97,10 @@ class Course
 
         return $this;
     }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
 }
