@@ -1,11 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Course{% endblock %}
+{% block title %}Nouveau cours{% endblock %}
 
 {% block body %}
-    <h1>Create new Course</h1>
 
-    {{ include('course/_form.html.twig') }}
+<div class="container py-5">
 
-    <a href="{{ path('app_course_index') }}">back to list</a>
+    <div class="card shadow-sm border-0 p-4 mx-auto" style="max-width: 600px;">
+
+        <h1 class="mb-4">Créer un cours</h1>
+
+        {{ form_start(form) }}
+
+            {{ form_widget(form) }}
+
+            <button class="btn btn-primary mt-3">
+                Enregistrer
+            </button>
+
+        {{ form_end(form) }}
+
+    </div>
+
+</div>
+
 {% endblock %}

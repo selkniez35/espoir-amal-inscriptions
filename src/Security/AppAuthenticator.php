@@ -44,19 +44,28 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
         );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
-    {
+    public function onAuthenticationSuccess(
+    Request $request,
+    TokenInterface $token,
+    string $firewallName
+    ): ?Response {
+
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
 
-        $roles = $token->getRoleNames();
+        $user = $token->getUser();
 
-        if (in_array('ROLE_ADMIN', $roles, true)) {
-            return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
+        if ($user instanceof \App\Entity\User && $user->isAdmin()) {
+
+            return new RedirectResponse(
+                $this->urlGenerator->generate('admin_dashboard')
+            );
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('app_home'));
+        return new RedirectResponse(
+            $this->urlGenerator->generate('app_home')
+        );
     }
 
     protected function getLoginUrl(Request $request): string

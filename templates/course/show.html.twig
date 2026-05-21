@@ -1,42 +1,80 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Course{% endblock %}
+{% block title %}Détail du cours{% endblock %}
 
 {% block body %}
-    <h1>Course</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ course.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ course.title }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ course.description }}</td>
-            </tr>
-            <tr>
-                <th>Level</th>
-                <td>{{ course.level }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ course.price }}</td>
-            </tr>
-            <tr>
-                <th>Scheadule</th>
-                <td>{{ course.scheadule }}</td>
-            </tr>
-        </tbody>
-    </table>
+<div class="container py-5">
 
-    <a href="{{ path('app_course_index') }}">back to list</a>
+    {# HEADER #}
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <a href="{{ path('app_course_edit', {'id': course.id}) }}">edit</a>
+        <h1 class="h3 mb-0">Détail du cours</h1>
 
-    {{ include('course/_delete_form.html.twig') }}
+    </div>
+
+    {# CARD TABLE #}
+    <div class="card shadow-sm border-0 rounded-4">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table align-middle mb-0">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Nom</th>
+                            <th>Description</th>
+                            <th>Niveau</th>
+                            <th>Prix</th>
+                            <th>Date de création</th>
+                            <th>Créé par</th>
+                            
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td class="ps-4 fw-semibold">
+                                {{ course.title }}
+                            </td>
+
+                            <td class="text-muted">
+                                {{ course.description }}
+                            </td>
+
+                            <td>
+                                <span class="badge bg-primary rounded-pill">
+                                    {{ course.level }}
+                                </span>
+                            </td>
+
+                            <td class="fw-semibold">
+                                {{ course.price | number_format(2, ',', ' ') }} €
+                            </td>
+
+                            <td>
+                                {{ course.createdAt | date('d/m/Y à H:i') }}
+                            </td>
+
+                            <td>
+                                {{ course.createdBy.fullName }}
+                            </td>
+
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}
