@@ -17,17 +17,15 @@ final class CourseController extends AbstractController
     #[Route('/', name: 'app_course_index', methods: ['GET'])]
     public function index(CourseRepository $courseRepository): Response
     {
-        $this->denyAccessUnlessGranted(UserRole::ADMIN->value);
-
         return $this->render('course/index.html.twig', [
             'courses' => $courseRepository->findAll(),
         ]);
     }
 
+    #[IsGranted(UserRole::ADMIN->value)]
     #[Route('/new', name: 'app_course_new', methods: ['GET', 'POST'])]
     public function new(Request $request, CourseRepository $courseRepository): Response
     {
-        $this->denyAccessUnlessGranted(UserRole::ADMIN->value);
 
         $course = new Course();
 
@@ -38,6 +36,10 @@ final class CourseController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $courseRepository->save($course);
+
+            $course->setCreateAt(new \DateTimeImmutable());
+
+            $course->setCreatedBy($this->getUser());
 
             $this->addFlash('success', 'Cours créé avec succès.');
 
@@ -52,17 +54,16 @@ final class CourseController extends AbstractController
     #[Route('/{id}', name: 'app_course_show', methods: ['GET'])]
     public function show(Course $course): Response
     {
-        $this->denyAccessUnlessGranted(UserRole::ADMIN->value);
 
         return $this->render('course/show.html.twig', [
             'course' => $course,
         ]);
     }
 
+    #[IsGranted(UserRole::ADMIN->value)]
     #[Route('/{id}/edit', name: 'app_course_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Course $course, CourseRepository $courseRepository): Response
     {
-        $this->denyAccessUnlessGranted(UserRole::ADMIN->value);
 
         $form = $this->createForm(CourseType::class, $course);
 
@@ -83,10 +84,10 @@ final class CourseController extends AbstractController
         ]);
     }
 
+    #[IsGranted(UserRole::ADMIN->value)]
     #[Route('/{id}', name: 'app_course_delete', methods: ['POST'])]
     public function delete(Request $request, Course $course, CourseRepository $courseRepository): Response
     {
-        $this->denyAccessUnlessGranted(UserRole::ADMIN->value);
 
         if (
             $this->isCsrfTokenValid(

@@ -24,13 +24,6 @@ class CourseType extends AbstractType
             ->add('price', null, [
                 'label' => 'Prix',
             ])
-            ->add('createdAt', null, [
-                'label' => 'Date de création',
-                'widget' => 'single_text',
-            ])
-             ->add('createdBy', null, [
-                'label' => 'Créé par',
-            ])
          ;
     }
 
