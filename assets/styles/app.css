@@ -5,3 +5,18 @@ body {
 .card {
     border-radius: 16px;
 }
+
+.logo-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* important */
+}
+
+.logo-wrapper {
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
