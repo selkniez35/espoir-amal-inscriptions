@@ -43,7 +43,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        $this->roles = ['ROLE_USER'];
+        $this->roles = [UserRole::USER->value];
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -61,7 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
+        $roles[] = UserRole::USER->value;
 
         return array_unique($roles);
     }
@@ -151,4 +151,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // clear temporary sensitive data if needed
     }
+
+    public function isAdmin(): bool
+{
+    return in_array(UserRole::ADMIN->value, $this->roles, true);
+}
 }
