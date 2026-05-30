@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ChildRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ChildRepository::class)]
@@ -23,8 +24,9 @@ class Child
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $birthday = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $level = null;
+    #[ORM\Column(type: 'smallint')]
+    #[Assert\Range(min: 0, max: 8)]
+    private ?int $level = null;
 
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $grade = null;
