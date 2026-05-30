@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CourseRepository;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -27,15 +28,25 @@ class Course
     private ?float $price = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'courses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
 
+    public function __construct()
+    {
+        $this->createdAt = new DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
     }
 
     public function getTitle(): ?string
@@ -43,11 +54,9 @@ class Course
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(?string $title): void
     {
         $this->title = $title;
-
-        return $this;
     }
 
     public function getDescription(): ?string
@@ -55,11 +64,9 @@ class Course
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
-
-        return $this;
     }
 
     public function getLevel(): ?string
@@ -67,11 +74,9 @@ class Course
         return $this->level;
     }
 
-    public function setLevel(string $level): static
+    public function setLevel(?string $level): void
     {
         $this->level = $level;
-
-        return $this;
     }
 
     public function getPrice(): ?float
@@ -79,28 +84,29 @@ class Course
         return $this->price;
     }
 
-    public function setPrice(float $price): static
+    public function setPrice(?float $price): void
     {
         $this->price = $price;
-
-        return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
-    } 
+    }
 
-    public function setScheadule(string $scheadule): static
+    public function setCreatedAt(?DateTimeImmutable $createdAt): void
     {
-        $this->scheadule = $scheadule;
-
-        return $this;
+        $this->createdAt = $createdAt;
     }
 
     public function getCreatedBy(): ?User
     {
         return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): void
+    {
+        $this->createdBy = $createdBy;
     }
 
 }
