@@ -43,16 +43,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $isVerified = false;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTimeImmutable $createdAt;
 
-    #[ORM\OneToMany(mappedBy: 'createdBy', targetEntity: Course::class)]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $address = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $phoneNumber = null;
+
+    #[ORM\OneToMany(targetEntity: Course::class, mappedBy: 'createdBy')]
     private Collection $courses;
+
+    #[ORM\OneToMany(targetEntity: Child::class, mappedBy: 'user')]
+    private Collection $children;
 
     public function __construct()
     {
         $this->roles = [UserRole::USER->value];
         $this->createdAt = new \DateTimeImmutable();
         $this->courses = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     // -------------------------
@@ -89,6 +99,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->firstName = $firstName;
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getCourses(): Collection
+    {
+        return $this->courses;
+    }
+
+    public function setCourses(Collection $courses): void
+    {
+        $this->courses = $courses;
     }
 
     public function getLastName(): ?string
@@ -160,6 +190,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // clear temporary sensitive data if needed
     }
 
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): self
+    {
+        $this->address = $address;
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?string $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
+        return $this;
+    }
+
     public function isAdmin(): bool
     {
         return in_array(UserRole::ADMIN->value, $this->roles, true);
@@ -168,5 +220,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function fullName(): string
     {
         return trim($this->firstName . ' ' . $this->lastName);
+    }
+
+    /**
+     * @return Collection<int, Child>
+     */
+    public function getChildren(): Collection
+    {
+        return $this->children;
+    }
+
+    public function addChild(Child $child): static
+    {
+        if (!$this->children->contains($child)) {
+            $this->children->add($child);
+            $child->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChild(Child $child): static
+    {
+        if ($this->children->removeElement($child)) {
+            // set the owning side to null (unless already changed)
+            if ($child->getUser() === $this) {
+                $child->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -4,12 +4,9 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationType;
-use App\Security\AppAuthenticator;
 use App\Security\EmailVerifier;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
@@ -17,13 +14,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Repository\UserRepository;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private UserRepository $userRepository)   
+    public function __construct(private readonly UserRepository $userRepository, private readonly EmailVerifier $emailVerifier)
     {
     }
 
@@ -31,8 +26,7 @@ class RegistrationController extends AbstractController
     public function register(
     Request $request,
     UserPasswordHasherInterface $userPasswordHasher,
-    EmailVerifier $emailVerifier,
-    UrlGeneratorInterface $urlGenerator
+    EmailVerifier $emailVerifier
     ): Response
     {
         $user = new User();
@@ -52,7 +46,7 @@ class RegistrationController extends AbstractController
             $emailVerifier->sendEmailConfirmation(
                 'app_verify_email',
                 $user,
-                (new TemplatedEmail())
+                new TemplatedEmail()
                     ->from(new Address('sam.elkniez@gmail.com', 'TEST ESPOIRAMAL'))
                     ->to((string) $user->getEmail())
                     ->subject('Please Confirm your Email')
@@ -76,6 +70,7 @@ class RegistrationController extends AbstractController
             // récupère user via lien signé, PAS via session
             $userId = $request->query->get('id');
 
+            /** @var User $user */
             $user = $this->userRepository->find($userId);
 
             if (!$user) {

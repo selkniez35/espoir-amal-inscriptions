@@ -30,10 +30,24 @@ final class EnrollmentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($enrollment);
-            $entityManager->flush();
+            $enrollment->setCreateAt(new \DateTimeImmutable());
+            $enrollment->setUser($this->getUser());
 
-            return $this->redirectToRoute('app_enrollment_index', [], Response::HTTP_SEE_OTHER);
+            $newChildren = $form->get('newChildren')->getData();
+            foreach ($newChildren as $child) {
+                $child->setUser($this->getUser());
+                $entityManager->persist($child);
+                $enrollment->addChild($child);
+            }
+
+            if ($enrollment->getChildren()->isEmpty()) {
+                $this->addFlash('error', 'Vous devez sélectionner ou ajouter au moins un enfant.');
+            } else {
+                $entityManager->persist($enrollment);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_enrollment_index', [], Response::HTTP_SEE_OTHER);
+            }
         }
 
         return $this->render('enrollment/new.html.twig', [

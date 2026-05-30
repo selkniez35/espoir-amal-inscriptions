@@ -30,6 +30,16 @@ class RegistrationType extends AbstractType
 
             ->add('email', EmailType::class)
 
+            ->add('phoneNumber', TextType::class, [
+                'label' => 'Téléphone',
+                'required' => true,
+            ])
+
+            ->add('address', TextType::class, [
+                'label' => 'Adresse postale',
+                'required' => true,
+            ])
+
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [

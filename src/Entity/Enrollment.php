@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\EnrollmentRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -16,17 +17,20 @@ class Enrollment
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $status = null;
-
     #[ORM\Column]
-    private ?\DateTimeImmutable $createAt = null;
+    private ?DateTimeImmutable $createAt;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $notes = null;
 
     #[ORM\ManyToOne(inversedBy: 'enrollments')]
     private ?User $user = null;
+
+    /**
+     * @var Collection<int, Child>
+     */
+    #[ORM\ManyToMany(targetEntity: Child::class)]
+    private Collection $children;
 
     /**
      * @var Collection<int, Payment>
@@ -37,6 +41,7 @@ class Enrollment
     public function __construct()
     {
         $this->payments = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -44,24 +49,12 @@ class Enrollment
         return $this->id;
     }
 
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(string $status): static
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    public function getCreateAt(): ?\DateTimeImmutable
+    public function getCreateAt(): ?DateTimeImmutable
     {
         return $this->createAt;
     }
 
-    public function setCreateAt(\DateTimeImmutable $createAt): static
+    public function setCreateAt(DateTimeImmutable $createAt): static
     {
         $this->createAt = $createAt;
 
@@ -88,6 +81,30 @@ class Enrollment
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Child>
+     */
+    public function getChildren(): Collection
+    {
+        return $this->children;
+    }
+
+    public function addChild(Child $child): static
+    {
+        if (!$this->children->contains($child)) {
+            $this->children->add($child);
+        }
+
+        return $this;
+    }
+
+    public function removeChild(Child $child): static
+    {
+        $this->children->removeElement($child);
 
         return $this;
     }
