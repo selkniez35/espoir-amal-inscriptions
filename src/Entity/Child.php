@@ -16,19 +16,24 @@ class Child
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le prénom est obligatoire")]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom est obligatoire")]
     private ?string $lastName = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank(message: "La date de naissance est obligatoire")]
     private ?\DateTime $birthday = null;
 
-    #[ORM\Column(type: 'smallint')]
-    #[Assert\Range(min: 0, max: 8)]
+    #[ORM\Column(type: Types::SMALLINT)]
+    #[Assert\NotBlank(message: "Le niveau est obligatoire")]
+    #[Assert\Range(min: 0, max: 8, notInRangeMessage: "Le niveau doit être entre {{ min }} et {{ max }}")]
     private ?int $level = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: "La classe est obligatoire")]
     private ?string $grade = null;
 
     #[ORM\ManyToOne(inversedBy: 'children')]
@@ -75,12 +80,12 @@ class Child
         return $this;
     }
 
-    public function getLevel(): ?string
+    public function getLevel(): ?int
     {
         return $this->level;
     }
 
-    public function setLevel(?string $level): static
+    public function setLevel(?int $level): static
     {
         $this->level = $level;
 

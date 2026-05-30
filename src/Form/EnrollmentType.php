@@ -25,23 +25,27 @@ class EnrollmentType extends AbstractType
         $builder
             ->add('children', EntityType::class, [
                 'class' => Child::class,
-                'choice_label' => 'fullName',
+                'choice_label' => fn (Child $c) =>
+                    $c->getFullName() . ' (Niveau ' . $c->getLevel() . ')',
                 'multiple' => true,
                 'expanded' => false,
                 'required' => false,
-                'attr' => [
-                    'class' => 'form-select'
-                ],
-                'query_builder' => function (EntityRepository $er) use ($user) {
-                    return $er->createQueryBuilder('c')
-                        ->where('c.user = :user')
-                        ->setParameter('user', $user);
-                },
-                'label' => 'Enfants déjà enregistrés'
+                'query_builder' => fn ($er) =>
+                $er->createQueryBuilder('c')
+                    ->where('c.user = :user')
+                    ->setParameter('user', $this->security->getUser()),
+                'label' => 'Enfants existants',
             ])
+
+            ->add('newChild', ChildType::class, [
+                'mapped' => false,
+                'required' => false,
+                'label' => 'Ajouter un nouvel enfant',
+            ])
+
             ->add('notes', null, [
-                'label' => 'Notes / Informations complémentaires',
-                'attr' => ['rows' => 3]
+                'label' => 'Notes',
+                'required' => false,
             ])
         ;
     }
