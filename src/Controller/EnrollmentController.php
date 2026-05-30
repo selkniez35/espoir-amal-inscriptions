@@ -14,40 +14,28 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/enrollment')]
 final class EnrollmentController extends AbstractController
 {
+
+    public function __construct(private readonly EnrollmentRepository $enrollmentRepository){}
+
     #[Route(name: 'app_enrollment_index', methods: ['GET'])]
-    public function index(EnrollmentRepository $enrollmentRepository): Response
+    public function index(): Response
     {
         return $this->render('enrollment/index.html.twig', [
-            'enrollments' => $enrollmentRepository->findAll(),
+            'enrollments' => $this->enrollmentRepository->findAll(),
         ]);
     }
 
     #[Route('/new', name: 'app_enrollment_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request): Response
     {
         $enrollment = new Enrollment();
         $form = $this->createForm(EnrollmentType::class, $enrollment);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $enrollment->setCreateAt(new \DateTimeImmutable());
-            $enrollment->setUser($this->getUser());
+            $this->enrollmentRepository->save($enrollment);
 
-            $newChildren = $form->get('newChildren')->getData();
-            foreach ($newChildren as $child) {
-                $child->setUser($this->getUser());
-                $entityManager->persist($child);
-                $enrollment->addChild($child);
-            }
-
-            if ($enrollment->getChildren()->isEmpty()) {
-                $this->addFlash('error', 'Vous devez sélectionner ou ajouter au moins un enfant.');
-            } else {
-                $entityManager->persist($enrollment);
-                $entityManager->flush();
-
-                return $this->redirectToRoute('app_enrollment_index', [], Response::HTTP_SEE_OTHER);
-            }
+            return $this->redirectToRoute('app_enrollment_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('enrollment/new.html.twig', [

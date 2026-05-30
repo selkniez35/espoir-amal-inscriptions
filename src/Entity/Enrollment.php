@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\EnrollmentStatus;
 use App\Repository\EnrollmentRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -38,10 +39,16 @@ class Enrollment
     #[ORM\OneToMany(targetEntity: Payment::class, mappedBy: 'enrollment')]
     private Collection $payments;
 
+    #[ORM\Column(enumType: EnrollmentStatus::class)]
+    private EnrollmentStatus $status;
+
     public function __construct()
     {
         $this->payments = new ArrayCollection();
         $this->children = new ArrayCollection();
+        $this->createAt = new \DateTimeImmutable();
+        $this->status = EnrollmentStatus::PENDING;
+
     }
 
     public function getId(): ?int
@@ -138,4 +145,16 @@ class Enrollment
 
         return $this;
     }
+
+    public function getStatus(): EnrollmentStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(EnrollmentStatus $status): void
+    {
+        $this->status = $status;
+    }
+
+
 }
