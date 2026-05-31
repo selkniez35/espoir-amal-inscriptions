@@ -14,18 +14,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ---------------- PHP ----------------
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
           extensions: mbstring, intl, pdo, pdo_sqlite, xml, ctype, iconv
+          coverage: none
 
+      # ---------------- CACHE COMPOSER ----------------
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+
+      # ---------------- VALIDATION ----------------
       - name: Validate Composer
         run: composer validate --no-check-publish
 
+      # ⚠ important pour ton erreur actuelle (PHP 8.2 vs 8.4)
+      - name: Check platform requirements
+        run: composer check-platform-reqs
+
+      # ---------------- INSTALL ----------------
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      # ---------------- SYMFONY QUALITY ----------------
       - name: Lint container
         run: php bin/console lint:container
 
@@ -35,11 +51,34 @@ jobs:
       - name: Lint YAML
         run: php bin/console lint:yaml config
 
+      - name: Doctrine schema validate
+        run: php bin/console doctrine:schema:validate --skip-sync
+
+      # ---------------- DATABASE TEST ----------------
+      - name: Create test DB
+        run: |
+          mkdir -p var
+          touch var/test.db
+
+      - name: Run migrations (test env)
+        env:
+          DATABASE_URL: sqlite:///%kernel.project_dir%/var/test.db
+        run: |
+          php bin/console doctrine:database:create --env=test || true
+          php bin/console doctrine:migrations:migrate --no-interaction --env=test
+
+      # ---------------- CACHE ----------------
+      - name: Warmup cache
+        run: php bin/console cache:warmup --env=test
+
+      # ---------------- TESTS ----------------
       - name: Run tests
         run: vendor/bin/phpunit
 
-      - name: PHPStan (optional)
-        run: vendor/bin/phpstan analyse || true
+      # ---------------- STATIC ANALYSIS ----------------
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse --no-progress || true
 
+      # ---------------- SECURITY ----------------
       - name: Security check
         run: composer audit || true
