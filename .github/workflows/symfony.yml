@@ -1,9 +1,4 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Symfony
+name: Symfony CI (Preprod)
 
 on:
   push:
@@ -15,33 +10,74 @@ permissions:
   contents: read
 
 jobs:
-  symfony-tests:
+  quality:
     runs-on: ubuntu-latest
+
     steps:
-    #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
-    # change this to (see https://github.com/shivammathur/setup-php#bookmark-versioning):
-    # uses: shivammathur/setup-php@v2
-    - uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
-      with:
-        php-version: '8.0'
-    - uses: actions/checkout@v4
-    - name: Copy .env.test.local
-      run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
-    - name: Install Dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-    - name: Create Database
-      run: |
-        mkdir -p data
-        touch data/database.sqlite
-    - name: Execute tests (Unit and Feature tests) via PHPUnit
-      env:
-        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-      run: vendor/bin/phpunit
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo_sqlite, zip
+          coverage: none
+
+      - name: Validate composer
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      # ========================
+      # Symfony validation
+      # ========================
+      - name: Check Symfony requirements
+        run: php bin/console about
+
+      - name: Check container
+        run: php bin/console lint:container
+
+      - name: Check Twig
+        run: php bin/console lint:twig templates
+
+      - name: Check YAML
+        run: php bin/console lint:yaml config
+
+      # ========================
+      # Code quality (PHPStan / CS)
+      # ========================
+      - name: PHP CS Fixer (dry-run)
+        run: |
+          if [ -f vendor/bin/php-cs-fixer ]; then
+            vendor/bin/php-cs-fixer fix --dry-run --diff
+          fi
+
+      - name: PHPStan (static analysis)
+        run: |
+          if [ -f vendor/bin/phpstan ]; then
+            vendor/bin/phpstan analyse src --level=5
+          fi
+
+      # ========================
+      # Security check
+      # ========================
+      - name: Symfony security check
+        run: |
+          if [ -f composer.lock ]; then
+            composer audit || true
+          fi
+
+      # ========================
+      # Tests
+      # ========================
+      - name: Create SQLite DB
+        run: |
+          mkdir -p var/data
+          touch var/data/test.db
+
+      - name: Run PHPUnit
+        env:
+          DATABASE_URL: sqlite:///%kernel.project_dir%/var/data/test.db
+        run: vendor/bin/phpunit --testdox
