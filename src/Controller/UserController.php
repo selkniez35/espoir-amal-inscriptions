@@ -48,8 +48,8 @@ final class UserController extends AbstractController
         }
 
         return $this->render('user/profile.html.twig', [
-            'user' => $user,
-            'form' => $form,
+            'form' => $form->createView(),
+            'children' => $user->getChildren(),
         ]);
     }
 

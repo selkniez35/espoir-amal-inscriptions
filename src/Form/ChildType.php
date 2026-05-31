@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+
 class ChildType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -22,13 +23,24 @@ class ChildType extends AbstractType
                 'label' => 'Prénom'
             ])
 
-            ->add('birthDate', DateType::class, [
+            ->add('birthday', DateType::class, [
                 'label' => 'Date de naissance',
                 'widget' => 'single_text'
+            ])
+            ->add('grade', TextType::class, [
+                'label' => 'Classe',
             ])
             ->add('level', ChoiceType::class, [
                 'choices' => array_combine(range(0, 8), range(0, 8)),
                 'label' => 'Niveau'
             ]);
+    }
+
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Child::class,
+        ]);
     }
 }

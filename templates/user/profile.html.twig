@@ -6,8 +6,9 @@
 
     <div class="container py-5">
 
-        <div class="row justify-content-center">
+        <div class="row g-4">
 
+            {# ===================== PROFIL ===================== #}
             <div class="col-md-6">
 
                 <div class="card shadow-sm border-0 rounded-4">
@@ -39,6 +40,65 @@
                         </button>
 
                         {{ form_end(form) }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {# ===================== ENFANTS ===================== #}
+            <div class="col-md-6">
+
+                <div class="card shadow-sm border-0 rounded-4">
+
+                    <div class="card-body p-4">
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="mb-0">👶 Mes enfants</h3>
+
+                            <a href="{{ path('app_child_new') }}"
+                               class="btn btn-sm btn-success">
+                                + Ajouter
+                            </a>
+                        </div>
+
+                        {% if children is empty %}
+
+                            <div class="text-muted">
+                                Aucun enfant enregistré.
+                            </div>
+
+                        {% else %}
+
+                            <div class="list-group">
+
+                                {% for child in children %}
+
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+
+                                        <div>
+                                            <div class="fw-bold">
+                                                {{ child.firstName }} {{ child.lastName }}
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Niveau {{ child.level }}
+                                            </small>
+                                        </div>
+
+                                        <a href="{{ path('app_child_edit', {id: child.id}) }}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            Modifier
+                                        </a>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
 
                     </div>
 
