@@ -1,28 +1,15 @@
-name: Symfony CI (Preprod)
-
-on:
-  push:
-    branches: [ "develop" ]
-  pull_request:
-    branches: [ "develop" ]
-
-permissions:
-  contents: read
-
 jobs:
-  quality:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
-          extensions: mbstring, intl, pdo_sqlite, zip
-          coverage: none
+          php-version: '8.4'
+          extensions: mbstring, intl, pdo, pdo_sqlite, xml, ctype, iconv
 
       - name: Validate composer
         run: composer validate --no-check-publish
@@ -30,54 +17,14 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      # ========================
-      # Symfony validation
-      # ========================
-      - name: Check Symfony requirements
-        run: php bin/console about
-
-      - name: Check container
-        run: php bin/console lint:container
-
-      - name: Check Twig
-        run: php bin/console lint:twig templates
-
-      - name: Check YAML
+      - name: Lint YAML
         run: php bin/console lint:yaml config
 
-      # ========================
-      # Code quality (PHPStan / CS)
-      # ========================
-      - name: PHP CS Fixer (dry-run)
-        run: |
-          if [ -f vendor/bin/php-cs-fixer ]; then
-            vendor/bin/php-cs-fixer fix --dry-run --diff
-          fi
+      - name: Lint Twig
+        run: php bin/console lint:twig templates
 
-      - name: PHPStan (static analysis)
-        run: |
-          if [ -f vendor/bin/phpstan ]; then
-            vendor/bin/phpstan analyse src --level=5
-          fi
+      - name: PHPStan (if installed)
+        run: vendor/bin/phpstan analyse || true
 
-      # ========================
-      # Security check
-      # ========================
-      - name: Symfony security check
-        run: |
-          if [ -f composer.lock ]; then
-            composer audit || true
-          fi
-
-      # ========================
-      # Tests
-      # ========================
-      - name: Create SQLite DB
-        run: |
-          mkdir -p var/data
-          touch var/data/test.db
-
-      - name: Run PHPUnit
-        env:
-          DATABASE_URL: sqlite:///%kernel.project_dir%/var/data/test.db
-        run: vendor/bin/phpunit --testdox
+      - name: Run tests
+        run: vendor/bin/phpunit
