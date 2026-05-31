@@ -34,13 +34,7 @@ class EnrollmentType extends AbstractType
                 $er->createQueryBuilder('c')
                     ->where('c.user = :user')
                     ->setParameter('user', $this->security->getUser()),
-                'label' => 'Enfants existants',
-            ])
-
-            ->add('newChild', ChildType::class, [
-                'mapped' => false,
-                'required' => false,
-                'label' => 'Ajouter un nouvel enfant',
+                'label' => 'Enfants',
             ])
 
             ->add('notes', null, [

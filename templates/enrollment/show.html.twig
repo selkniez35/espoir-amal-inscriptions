@@ -1,34 +1,67 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Enrollment{% endblock %}
+{% block title %}Détails inscription{% endblock %}
 
 {% block body %}
-    <h1>Enrollment</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ enrollment.id }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ enrollment.status }}</td>
-            </tr>
-            <tr>
-                <th>CreateAt</th>
-                <td>{{ enrollment.createAt ? enrollment.createAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Notes</th>
-                <td>{{ enrollment.notes }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="container py-5">
 
-    <a href="{{ path('app_enrollment_index') }}">back to list</a>
+        <div class="row justify-content-center">
 
-    <a href="{{ path('app_enrollment_edit', {'id': enrollment.id}) }}">edit</a>
+            <div class="col-md-8 col-lg-6">
 
-    {{ include('enrollment/_delete_form.html.twig') }}
+                <div class="card shadow-sm border-0 rounded-4">
+
+                    <div class="card-body p-4">
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+
+                            <h3 class="mb-0">📄 Détails inscription</h3>
+
+                            <span class="badge bg-primary">
+                            {{ enrollment.status.label() }}
+                        </span>
+
+                        </div>
+
+                        <div class="list-group list-group-flush">
+
+                            <div class="list-group-item d-flex justify-content-between">
+                                <span class="text-muted">ID</span>
+                                <span class="fw-semibold">{{ enrollment.id }}</span>
+                            </div>
+
+                            <div class="list-group-item d-flex justify-content-between">
+                                <span class="text-muted">Statut</span>
+                                <span class="fw-semibold">
+                                {{ enrollment.status.label() }}
+                            </span>
+                            </div>
+
+                            <div class="list-group-item d-flex justify-content-between">
+                                <span class="text-muted">Créée le</span>
+                                <span class="fw-semibold">
+                                {{ enrollment.createAt ? enrollment.createAt|date('d/m/Y H:i') : '-' }}
+                            </span>
+                            </div>
+
+                            <div class="list-group-item">
+                                <div class="text-muted mb-1">Notes</div>
+                                    <div>
+                                        {{ enrollment.notes ?: 'Aucune note' }}
+                                    </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 {% endblock %}
