@@ -1,9 +1,18 @@
+name: CI
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
 jobs:
-  ci:
+  quality:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -11,20 +20,26 @@ jobs:
           php-version: '8.4'
           extensions: mbstring, intl, pdo, pdo_sqlite, xml, ctype, iconv
 
-      - name: Validate composer
+      - name: Validate Composer
         run: composer validate --no-check-publish
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Lint YAML
-        run: php bin/console lint:yaml config
+      - name: Lint container
+        run: php bin/console lint:container
 
       - name: Lint Twig
         run: php bin/console lint:twig templates
 
-      - name: PHPStan (if installed)
-        run: vendor/bin/phpstan analyse || true
+      - name: Lint YAML
+        run: php bin/console lint:yaml config
 
       - name: Run tests
         run: vendor/bin/phpunit
+
+      - name: PHPStan (optional)
+        run: vendor/bin/phpstan analyse || true
+
+      - name: Security check
+        run: composer audit || true
