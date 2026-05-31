@@ -27,6 +27,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Email]
     private ?string $email = null;
 
+    //phone
+    #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 8, max: 20)]
+    #[Assert\Regex(pattern: "/^(\+33|0)[1-9]([ .]?\d{2}){4}$/")]
+    private ?string $phone = null;
+
     #[ORM\Column(length: 100)]
     private ?string $firstName = null;
 
@@ -110,6 +117,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->createdAt = $createdAt;
     }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): void
+    {
+        $this->phone = $phone;
+    }
+
+
 
     public function getCourses(): Collection
     {
