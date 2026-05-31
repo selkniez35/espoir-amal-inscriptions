@@ -1,123 +1,126 @@
 name: Symfony Preprod CI
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+    push:
+        tags:
+            - 'v*.*.*'
 
 jobs:
-  ci:
-    runs-on: ubuntu-latest
+    ci:
+        runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: espoir_amal_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=10
+        services:
+            mysql:
+                image: mysql:8
+                env:
+                    MYSQL_ROOT_PASSWORD: root
+                    MYSQL_DATABASE: espoir_amal_test
+                ports:
+                    - 3306:3306
+                options: >-
+                    --health-cmd="mysqladmin ping --silent"
+                    --health-interval=5s
+                    --health-timeout=5s
+                    --health-retries=10
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      # =========================
-      # SECURITY : tag must come from main/develop
-      # =========================
-      - name: Verify tag source branch
-        run: |
-          git fetch origin develop
-          if ! git branch -r --contains $GITHUB_SHA | grep origin/develop; then
-            echo "❌ Tag must come from develop branch"
-            exit 1
-          fi
+            # =========================
+            # TAG SECURITY CHECK
+            # =========================
+            - name: Verify tag source branch
+              run: |
+                  git fetch origin develop
+                  if ! git branch -r --contains $GITHUB_SHA | grep origin/develop; then
+                    echo "❌ Tag must come from develop branch"
+                    exit 1
+                  fi
 
-      # =========================
-      # PHP SETUP
-      # =========================
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.4
-          extensions: mbstring, intl, pdo_mysql, opcache
+            # =========================
+            # PHP SETUP
+            # =========================
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.4
+                  extensions: mbstring, intl, pdo_mysql, opcache
+                  coverage: none
 
-      # =========================
-      # DEPENDENCIES
-      # =========================
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --no-scripts --no-progress
+            # =========================
+            # COMPOSER
+            # =========================
+            - name: Validate composer
+              run: composer validate --strict
 
-      # =========================
-      # ENV TEST
-      # =========================
-      - name: Setup environment
-        run: |
-          echo "APP_ENV=test" > .env
-          echo "APP_DEBUG=0" >> .env
-          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/espoir_amal_test?serverVersion=8.0" >> .env
+            - name: Install dependencies
+              run: composer install --no-interaction --prefer-dist --no-progress
 
-      # =========================
-      # WAIT MYSQL
-      # =========================
-      - name: Wait for MySQL
-        run: |
-          until mysqladmin ping -h"127.0.0.1" --silent; do
-            sleep 1
-          done
+            # =========================
+            # ENV SETUP (IMPORTANT FIX)
+            # =========================
+            - name: Setup environment
+              run: |
+                  echo "APP_ENV=test" >> .env
+                  echo "APP_DEBUG=0" >> .env
+                  echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/espoir_amal_test?serverVersion=8.0" >> .env
+                  echo "DEFAULT_URI=http://localhost" >> .env
+                  echo "APP_SECRET=ci_secret" >> .env
 
-      # =========================
-      # SYMFONY CHECKS
-      # =========================
-      - name: Symfony lint container
-        run: php bin/console lint:container
+            # =========================
+            # WAIT MYSQL
+            # =========================
+            - name: Wait for MySQL
+              run: |
+                  until mysqladmin ping -h"127.0.0.1" --silent; do
+                    sleep 1
+                  done
 
-      - name: Symfony lint twig
-        run: php bin/console lint:twig templates
+            # =========================
+            # SYMFONY VALIDATION
+            # =========================
+            - name: Symfony lint container
+              run: php bin/console lint:container
 
-      - name: Symfony lint yaml
-        run: php bin/console lint:yaml config
+            - name: Symfony lint twig
+              run: php bin/console lint:twig templates
 
-      - name: Symfony about check
-        run: php bin/console about
+            - name: Symfony lint yaml
+              run: php bin/console lint:yaml config
 
-      # =========================
-      # CACHE
-      # =========================
-      - name: Clear cache
-        run: php bin/console cache:clear --env=test
+            - name: Symfony about
+              run: php bin/console about
 
-      # =========================
-      # DATABASE
-      # =========================
-      - name: Create database
-        run: php bin/console doctrine:database:create --if-not-exists --env=test
+            # =========================
+            # CACHE + DB
+            # =========================
+            - name: Cache clear
+              run: php bin/console cache:clear --env=test
 
-      - name: Run migrations
-        run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
+            - name: Create DB
+              run: php bin/console doctrine:database:create --if-not-exists --env=test
 
-      # =========================
-      # QUALITY CODE (IMPORTANT)
-      # =========================
-      - name: PHPStan (static analysis)
-        run: |
-          if [ -f vendor/bin/phpstan ]; then
-            vendor/bin/phpstan analyse src --level=6
-          fi
+            - name: Migrations
+              run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
 
-      - name: PHP CS Fixer (check only)
-        run: |
-          if [ -f vendor/bin/php-cs-fixer ]; then
-            vendor/bin/php-cs-fixer fix --dry-run --diff
-          fi
+            # =========================
+            # QUALITY TOOLS
+            # =========================
+            - name: PHPStan
+              run: |
+                  if [ -f vendor/bin/phpstan ]; then
+                    vendor/bin/phpstan analyse src --level=6
+                  fi
 
-      # =========================
-      # TESTS
-      # =========================
-      - name: PHPUnit tests
-        run: php bin/phpunit --fail-on-warning --fail-on-risky
+            - name: PHP-CS-Fixer
+              run: |
+                  if [ -f vendor/bin/php-cs-fixer ]; then
+                    vendor/bin/php-cs-fixer fix --dry-run --diff
+                  fi
+
+            # =========================
+            # TESTS
+            # =========================
+            - name: PHPUnit
+              run: php bin/phpunit --fail-on-warning --fail-on-risky
