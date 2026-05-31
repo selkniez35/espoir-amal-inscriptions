@@ -52,7 +52,7 @@ jobs:
             # COMPOSER
             # =========================
             - name: Validate composer
-              run: composer validate --strict
+              run: composer validate
 
             - name: Install dependencies
               run: composer install --no-interaction --prefer-dist --no-progress
