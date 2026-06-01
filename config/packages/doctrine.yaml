@@ -2,7 +2,7 @@ doctrine:
     dbal:
             url: '%env(resolve:DATABASE_URL)%'
 
-            server_version: '%env(default:DB_SERVER_VERSION:8.0)%'
+            server_version: '%env(DB_SERVER_VERSION)%'
 
             profiling_collect_backtrace: '%kernel.debug%'
 
