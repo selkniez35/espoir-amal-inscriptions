@@ -12,7 +12,7 @@ WORKDIR /app
 COPY . .
 
 # Install PHP deps
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --optimize-autoloader
 
 # Install assets
 RUN npm install
