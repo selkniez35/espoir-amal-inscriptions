@@ -1,0 +1,6 @@
+.git
+node_modules
+var/cache
+var/log
+vendor
+.env.local

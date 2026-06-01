@@ -1,32 +1,62 @@
 FROM php:8.4-cli
 
-# Dépendances système
+# =========================
+# SYSTEM DEPENDENCIES
+# =========================
 RUN apt-get update && apt-get install -y \
-    git unzip curl zip libicu-dev libzip-dev nodejs npm
+    git unzip curl zip \
+    libicu-dev libzip-dev \
+    nodejs npm
 
-# Extensions PHP OBLIGATOIRES (MYSQL DRIVER)
+# =========================
+# PHP EXTENSIONS (CRUCIAL)
+# =========================
 RUN docker-php-ext-install pdo pdo_mysql intl zip
 
-# Composer
+# =========================
+# COMPOSER
+# =========================
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
+# =========================
+# COPY CODE
+# =========================
 COPY . .
 
-# Install PHP deps
-RUN composer install --no-dev --optimize-autoloader
+# =========================
+# ENV PROD FORCE (IMPORTANT)
+# =========================
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
 
-# Install assets
+# =========================
+# INSTALL PHP DEPENDENCIES
+# =========================
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# =========================
+# FRONT ASSETS
+# =========================
 RUN npm install
 RUN npm run build
 
-# Symfony cache
+# =========================
+# SYMFONY CACHE CLEAN
+# =========================
+RUN rm -rf var/cache/*
+RUN php bin/console cache:clear --env=prod --no-warmup || true
+RUN php bin/console cache:warmup --env=prod || true
+
+# =========================
+# PERMISSIONS
+# =========================
 RUN mkdir -p var && chmod -R 777 var
 
 EXPOSE 10000
 
-RUN php bin/console cache:clear --env=prod || true
-RUN php bin/console cache:warmup --env=prod || true
-
-CMD ["php", "-S", "0.0.0.0:10000", "-t", "public"]
+# =========================
+# RUN SERVER
+# =========================
+CMD ["sh", "-c", "APP_ENV=prod APP_DEBUG=0 php -S 0.0.0.0:10000 -t public"]
