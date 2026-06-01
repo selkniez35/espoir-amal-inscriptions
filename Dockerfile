@@ -3,22 +3,22 @@ FROM php:8.4-cli
 RUN apt-get update && apt-get install -y \
     git unzip curl zip libicu-dev libzip-dev nodejs npm
 
-RUN docker-php-ext-install pdo pdo_mysql intl zip
+# ✅ IMPORTANT : drivers DB
+RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql intl zip
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
-
 COPY . .
 
-# INSTALL SAFE (IMPORTANT)
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+# Composer sans crash env
+RUN composer install --no-dev --no-interaction --no-scripts
 
-# FRONT
-RUN npm install
-RUN npm run build
+# assets
+RUN npm install && npm run build
 
-RUN mkdir -p var
+# cache safe
+RUN mkdir -p var && chmod -R 777 var
 
 EXPOSE 10000
 
