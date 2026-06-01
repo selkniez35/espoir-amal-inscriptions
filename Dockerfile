@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     nodejs npm
 
 # =========================
-# PHP EXTENSIONS (CRUCIAL)
+# PHP EXTENSIONS (IMPORTANT)
 # =========================
 RUN docker-php-ext-install pdo pdo_mysql intl zip
 
@@ -21,23 +21,31 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 # =========================
-# COPY CODE
+# COPY PROJECT
 # =========================
 COPY . .
 
 # =========================
-# ENV PROD FORCE (IMPORTANT)
+# FORCE PROD ENV (CRITICAL FOR SYMFONY)
 # =========================
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
+ENV COMPOSER_MEMORY_LIMIT=-1
+
+# IMPORTANT: avoid PHP version mismatch issues
+RUN composer config platform.php 8.4.0
 
 # =========================
 # INSTALL PHP DEPENDENCIES
 # =========================
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-scripts -vvv
 
 # =========================
-# FRONT ASSETS
+# FRONTEND BUILD
 # =========================
 RUN npm install
 RUN npm run build
@@ -57,6 +65,6 @@ RUN mkdir -p var && chmod -R 777 var
 EXPOSE 10000
 
 # =========================
-# RUN SERVER
+# START SERVER (RENDER SAFE)
 # =========================
 CMD ["sh", "-c", "APP_ENV=prod APP_DEBUG=0 php -S 0.0.0.0:10000 -t public"]
