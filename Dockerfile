@@ -26,4 +26,7 @@ RUN mkdir -p var && chmod -R 777 var
 
 EXPOSE 10000
 
+RUN php bin/console cache:clear --env=prod || true
+RUN php bin/console cache:warmup --env=prod || true
+
 CMD ["php", "-S", "0.0.0.0:10000", "-t", "public"]
