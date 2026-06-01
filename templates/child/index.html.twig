@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Élèves{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <h1 class="mb-4">Élèves</h1>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Niveau</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for child in children %}
+                <tr>
+                    <td>{{ child.id }}</td>
+                    <td>{{ child.firstName }}</td>
+                    <td>{{ child.lastName }}</td>
+                    <td>{{ child.level }}</td>
+                    <td>
+                        <a href="{{ path('app_child_show', {'id': child.id}) }}" class="btn btn-sm btn-outline-primary">Voir</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun élève trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

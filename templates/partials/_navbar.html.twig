@@ -17,18 +17,10 @@
             {# LIENS GAUCHE #}
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                {% if app.user %}
+                {% if is_granted('ROLE_ADMIN') is same as false %}
                     <li class="nav-item">
                         <a class="nav-link" href="#">
                             Mes inscriptions
-                        </a>
-                    </li>
-                {% endif %}
-
-                {% if is_granted('ROLE_ADMIN') %}
-                    <li class="nav-item">
-                        <a class="nav-link text-danger fw-semibold" href="#">
-                            Administration
                         </a>
                     </li>
                 {% endif %}
