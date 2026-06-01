@@ -1,11 +1,10 @@
 doctrine:
     dbal:
-        url: '%env(resolve:DATABASE_URL)%'
+            url: '%env(resolve:DATABASE_URL)%'
 
-        # IMPORTANT : éviter les erreurs de plateforme vide
-        server_version: '%env(default:8.0:DB_SERVER_VERSION)%'
+            server_version: '%env(default:DB_SERVER_VERSION:8.0)%'
 
-        profiling_collect_backtrace: '%kernel.debug%'
+            profiling_collect_backtrace: '%kernel.debug%'
 
     orm:
         auto_mapping: true
