@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use App\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -56,10 +57,10 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
         $user = $token->getUser();
 
-        if ($user instanceof \App\Entity\User && $user->isAdmin()) {
+        if ($user instanceof User && $user->isAdmin()) {
 
             return new RedirectResponse(
-                $this->urlGenerator->generate('admin_dashboard')
+                $this->urlGenerator->generate('app_home')
             );
         }
 
