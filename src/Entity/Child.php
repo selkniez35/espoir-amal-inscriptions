@@ -61,4 +61,9 @@ class Child
         $this->level = $level;
         return $this;
     }
+
+    public function getFullName(): string
+    {
+        return trim($this->firstName . ' ' . $this->lastName);
+    }
 }

@@ -1,11 +1,60 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Enrollment{% endblock %}
+{% block title %}Nouvelle inscription{% endblock %}
 
 {% block body %}
-    <h1>Create new Enrollment</h1>
 
-    {{ include('enrollment/_form.html.twig') }}
+    {# HEADER #}
+    <section class="bg-success bg-gradient text-white py-5">
+        <div class="container text-center py-4">
 
-    <a href="{{ path('app_enrollment_index') }}">back to list</a>
+            <h1 class="display-5 fw-bold mb-2">
+                📝 Nouvelle inscription
+            </h1>
+
+            <p class="lead mb-0">
+                Créez une nouvelle demande d'inscription pour un élève.
+            </p>
+
+        </div>
+    </section>
+
+    {# CONTENT #}
+    <section class="py-5">
+        <div class="container">
+
+            <div class="row justify-content-center">
+
+                <div class="col-lg-8">
+
+                    <div class="card border-0 shadow-sm rounded-4">
+
+                        <div class="card-body p-4">
+
+                            <h2 class="fw-bold mb-4">
+                                Formulaire d'inscription
+                            </h2>
+
+                            {{ include('enrollment/_form.html.twig') }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="text-center mt-4">
+
+                        <a href="{{ path('app_enrollment_index') }}"
+                           class="btn btn-outline-secondary rounded-pill px-4">
+                            ← Retour à la liste
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
 {% endblock %}

@@ -27,7 +27,7 @@ class Enrollment
     private ?string $notes = null;
 
     #[ORM\ManyToOne(inversedBy: 'enrollments')]
-    private ?User $user = null;
+    private ?Child $child = null;
 
     /**
      * @var Collection<int, Payment>
@@ -79,14 +79,14 @@ class Enrollment
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getChild(): ?Child
     {
-        return $this->user;
+        return $this->child;
     }
 
-    public function setUser(?User $user): static
+    public function setChild(?Child $child): static
     {
-        $this->user = $user;
+        $this->child = $child;
 
         return $this;
     }

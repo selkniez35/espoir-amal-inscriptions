@@ -25,6 +25,8 @@ final class HomeController extends AbstractController
                 'totalChildren' => $childRepository->count([]),
                 'totalEnrollments' => $enrollmentRepository->count([]),
                 'pendingEnrollments' => $enrollmentRepository->count(['status' => EnrollmentStatus::PENDING->value]),
+                'validatedEnrollments' => $enrollmentRepository->count(['status' => EnrollmentStatus::VALIDATED->value]),
+                'rejectedEnrollments' => $enrollmentRepository->count(['status' => EnrollmentStatus::REJECTED->value]),
                 'totalUsers' => $userRepository->count([]),
                 'latestEnrollments' => $enrollmentRepository->findBy([], ['createAt' => 'DESC'], 5),
             ]);

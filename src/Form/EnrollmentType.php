@@ -2,8 +2,10 @@
 
 namespace App\Form;
 
+use App\Entity\Child;
+use App\Enum\EnrollmentStatus;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use App\Entity\Enrollment;
-use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -14,14 +16,15 @@ class EnrollmentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('status')
-            ->add('createAt', null, [
-                'widget' => 'single_text',
+            ->add('status', EnumType::class, [
+                'class' => EnrollmentStatus::class,
+                'choice_label' => fn (EnrollmentStatus $choice) => $choice->label(),
             ])
             ->add('notes')
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
+            ->add('child', EntityType::class, [
+                'class' => Child::class,
+                'label' => 'Elève',
+                'choice_label' => 'fullName',
             ])
         ;
     }

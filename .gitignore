@@ -26,4 +26,4 @@ npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 /src/Controller/ChildController.php
-/migrations/Version20260601002528.php
+/migrations/

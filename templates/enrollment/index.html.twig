@@ -1,39 +1,128 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Enrollment index{% endblock %}
+{% block title %}Inscriptions - Admin{% endblock %}
 
 {% block body %}
-    <h1>Enrollment index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Status</th>
-                <th>CreateAt</th>
-                <th>Notes</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for enrollment in enrollments %}
-            <tr>
-                <td>{{ enrollment.id }}</td>
-                <td>{{ enrollment.status }}</td>
-                <td>{{ enrollment.createAt ? enrollment.createAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ enrollment.notes }}</td>
-                <td>
-                    <a href="{{ path('app_enrollment_show', {'id': enrollment.id}) }}">show</a>
-                    <a href="{{ path('app_enrollment_edit', {'id': enrollment.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {# HEADER #}
+    <section class="bg-success bg-gradient text-white py-5">
+        <div class="container text-center py-4">
 
-    <a href="{{ path('app_enrollment_new') }}">Create new</a>
+            <h1 class="display-5 fw-bold mb-2">
+                📝 Gestion des inscriptions
+            </h1>
+
+            <p class="lead mb-0">
+                Consultez et gérez toutes les demandes d'inscription.
+            </p>
+
+        </div>
+    </section>
+
+    {# CONTENT #}
+    <section class="py-5">
+        <div class="container">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <h2 class="fw-bold mb-0">
+                    Liste des inscriptions
+                </h2>
+
+                <a href="{{ path('app_enrollment_new') }}"
+                   class="btn btn-success rounded-pill px-4">
+                    + Nouvelle inscription
+                </a>
+
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                                <th>Notes</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+
+                            {% for enrollment in enrollments %}
+
+                                <tr>
+
+                                    <td class="fw-bold">
+                                        #{{ enrollment.id }}
+                                    </td>
+
+                                    <td>
+                                        {% if enrollment.status.label() == 'En attente' %}
+                                            <span class="badge bg-warning text-dark">
+                                                {{ enrollment.status.label() }}
+                                            </span>
+                                        {% elseif enrollment.status.label() == 'Validée' %}
+                                            <span class="badge bg-success">
+                                                {{ enrollment.status.label() }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-danger">
+                                                {{ enrollment.status.label() }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="text-muted">
+                                        {{ enrollment.createAt ? enrollment.createAt|date('d/m/Y') : '' }}
+                                    </td>
+
+                                    <td class="text-muted">
+                                        {{ enrollment.notes ?: '-' }}
+                                    </td>
+
+                                    <td class="text-end">
+
+                                        <a href="{{ path('app_enrollment_show', {'id': enrollment.id}) }}"
+                                           class="btn btn-sm btn-outline-success">
+                                            Voir
+                                        </a>
+
+                                        <a href="{{ path('app_enrollment_edit', {'id': enrollment.id}) }}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            Modifier
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                            {% else %}
+
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">
+                                        Aucune inscription trouvée
+                                    </td>
+                                </tr>
+
+                            {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
 {% endblock %}

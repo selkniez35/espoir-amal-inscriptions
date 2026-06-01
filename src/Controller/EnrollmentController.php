@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Enrollment;
 use App\Form\EnrollmentType;
 use App\Repository\EnrollmentRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,24 +15,28 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/enrollment')]
 final class EnrollmentController extends AbstractController
 {
+
+    public function __construct(private readonly EnrollmentRepository $enrollmentRepository) {}
     #[Route(name: 'app_enrollment_index', methods: ['GET'])]
-    public function index(EnrollmentRepository $enrollmentRepository): Response
+    public function index(): Response
     {
         return $this->render('enrollment/index.html.twig', [
-            'enrollments' => $enrollmentRepository->findAll(),
+            'enrollments' => $this->enrollmentRepository->findAll(),
         ]);
     }
 
     #[Route('/new', name: 'app_enrollment_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request): Response
     {
         $enrollment = new Enrollment();
         $form = $this->createForm(EnrollmentType::class, $enrollment);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($enrollment);
-            $entityManager->flush();
+
+
+            $enrollment->setCreateAt(new DateTimeImmutable());
+            $this->enrollmentRepository->save($enrollment);
 
             return $this->redirectToRoute('app_enrollment_index', [], Response::HTTP_SEE_OTHER);
         }
