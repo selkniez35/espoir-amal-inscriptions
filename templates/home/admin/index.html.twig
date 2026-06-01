@@ -4,6 +4,11 @@
 
 {% block body %}
 
+    <audio autoplay loop>
+        <source src="{{ asset('audio/adhan.mp3') }}" type="audio/mpeg">
+        Votre navigateur ne supporte pas l’audio.
+    </audio>
+
     <section class="bg-success bg-gradient text-white py-5">
         <div class="container text-center py-5">
 
@@ -159,7 +164,7 @@
                         <table class="table align-middle">
                             <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>Elève</th>
                                 <th>Date</th>
                                 <th>Statut</th>
                                 <th></th>
@@ -169,7 +174,9 @@
                             <tbody>
                             {% for enrollment in latestEnrollments %}
                                 <tr>
-                                    <td>#{{ enrollment.id }}</td>
+                                    <td>
+                                        {{ enrollment.child ? enrollment.child.fullName : '—' }}
+                                    </td>
 
                                     <td>
                                         {{ enrollment.createAt|date('d/m/Y') }}
