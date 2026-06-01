@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\EnrollmentStatus;
 use App\Repository\EnrollmentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,8 +17,8 @@ class Enrollment
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $status = null;
+    #[ORM\Column(enumType: EnrollmentStatus::class)]
+    private ?EnrollmentStatus $status = EnrollmentStatus::PENDING;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createAt = null;
@@ -44,16 +45,14 @@ class Enrollment
         return $this->id;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?EnrollmentStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(?EnrollmentStatus $status): void
     {
         $this->status = $status;
-
-        return $this;
     }
 
     public function getCreateAt(): ?\DateTimeImmutable

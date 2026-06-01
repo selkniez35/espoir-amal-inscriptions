@@ -1,0 +1,230 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - Mosquée Espoir Amal{% endblock %}
+
+{% block body %}
+
+    <section class="bg-success bg-gradient text-white py-5">
+        <div class="container text-center py-5">
+
+            <h1 class="display-4 fw-bold mb-3">
+                ⚙️ Administration
+            </h1>
+
+            <p class="lead mb-4">
+                Gestion des inscriptions, des élèves et des utilisateurs.
+            </p>
+
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">
+                    Vue d'ensemble
+                </h2>
+
+                <p class="text-muted">
+                    Tableau de bord de la mosquée.
+                </p>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body text-center p-4">
+                            <div class="fs-1 mb-3">👨‍🎓</div>
+                            <h2 class="fw-bold text-success">
+                                {{ totalChildren }}
+                            </h2>
+                            <p class="text-muted mb-0">
+                                Élèves
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body text-center p-4">
+                            <div class="fs-1 mb-3">📝</div>
+                            <h2 class="fw-bold text-success">
+                                {{ totalEnrollments }}
+                            </h2>
+                            <p class="text-muted mb-0">
+                                Inscriptions
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body text-center p-4">
+                            <div class="fs-1 mb-3">⏳</div>
+                            <h2 class="fw-bold text-warning">
+                                {{ pendingEnrollments }}
+                            </h2>
+                            <p class="text-muted mb-0">
+                                En attente
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body text-center p-4">
+                            <div class="fs-1 mb-3">👥</div>
+                            <h2 class="fw-bold text-primary">
+                                {{ totalUsers }}
+                            </h2>
+                            <p class="text-muted mb-0">
+                                Utilisateurs
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <section class="bg-light py-5">
+        <div class="container">
+
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">
+                    Accès rapide
+                </h2>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <a href="{{ path('app_enrollment_index') }}"
+                       class="text-decoration-none">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body text-center p-4">
+                                <div class="fs-1 mb-3">📝</div>
+                                <h4 class="fw-bold text-dark">
+                                    Inscriptions
+                                </h4>
+                                <p class="text-muted mb-0">
+                                    Gérer les demandes d'inscription.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-4">
+                    <a href="{{ path('app_child_index') }}"
+                       class="text-decoration-none">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body text-center p-4">
+                                <div class="fs-1 mb-3">👨‍🎓</div>
+                                <h4 class="fw-bold text-dark">
+                                    Élèves
+                                </h4>
+                                <p class="text-muted mb-0">
+                                    Consulter les élèves inscrits.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-4">
+                    <a href="{{ path('app_user_index') }}"
+                       class="text-decoration-none">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body text-center p-4">
+                                <div class="fs-1 mb-3">👥</div>
+                                <h4 class="fw-bold text-dark">
+                                    Utilisateurs
+                                </h4>
+                                <p class="text-muted mb-0">
+                                    Gérer les comptes utilisateurs.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+
+                    <h3 class="fw-bold mb-4">
+                        Dernières inscriptions
+                    </h3>
+
+                    <div class="table-responsive">
+
+                        <table class="table align-middle">
+
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+
+                            {% for enrollment in latestEnrollments %}
+                                <tr>
+                                    <td>#{{ enrollment.id }}</td>
+
+                                    <td>
+                                        {{ enrollment.createAt|date('d/m/Y') }}
+                                    </td>
+
+                                    <td>
+                                        {% if enrollment.status.value == 'PENDING' %}
+                                            <span class="badge bg-warning">
+                                                En attente
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-success">
+                                                Validée
+                                            </span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        <a href="{{ path('app_enrollment_show', {'id': enrollment.id}) }}"
+                                           class="btn btn-sm btn-outline-success">
+                                            Voir
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+{% endblock %}

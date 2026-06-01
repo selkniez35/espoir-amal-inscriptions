@@ -1,0 +1,136 @@
+{% extends '../../base.html.twig' %}
+
+{% block title %}Mosquée Espoir Amal - Inscriptions{% endblock %}
+
+{% block body %}
+
+    <section class="bg-success bg-gradient text-white py-5">
+        <div class="container text-center py-5">
+
+            <h1 class="display-4 fw-bold mb-3">
+                🕌 Mosquée Espoir Amal
+            </h1>
+
+            <p class="lead mb-4">
+                Plateforme d'inscription aux cours d'arabe, de Coran
+                et d'éducation islamique.
+            </p>
+
+            {% if app.user %}
+                <a href="{{ path('app_enrollment_new') }}"
+                   class="btn btn-light btn-lg px-4 rounded-pill shadow-sm">
+                    S'inscrire maintenant
+                </a>
+            {% else %}
+                <a href="{{ path('app_register') }}"
+                   class="btn btn-light btn-lg px-4 rounded-pill shadow-sm">
+                    Créer un compte
+                </a>
+            {% endif %}
+
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">
+                    Nos enseignements
+                </h2>
+
+                <p class="text-muted">
+                    Des cours adaptés au niveau de vos enfants.
+                </p>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 rounded-4">
+
+                        <div class="card-body text-center p-4">
+
+                            <div class="fs-1 mb-3">
+                                📘
+                            </div>
+
+                            <h4 class="fw-bold">
+                                Cours d'arabe
+                            </h4>
+
+                            <p class="text-muted">
+                                Lecture, écriture et compréhension
+                                de la langue arabe.
+                            </p>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 rounded-4">
+
+                        <div class="card-body text-center p-4">
+
+                            <div class="fs-1 mb-2">
+                                🕌
+                            </div>
+
+                            <h4 class="fw-bold">
+                                Cours de Coran
+                            </h4>
+
+                            <p class="text-muted">
+                                Apprentissage et révision du Coran.
+                            </p>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <section class="bg-light py-5">
+        <div class="container">
+
+            <div class="row text-center">
+
+                <div class="col-md-4 mb-4">
+                    <h2 class="fw-bold text-success">
+                        100+
+                    </h2>
+                    <p class="text-muted">
+                        Élèves inscrits
+                    </p>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <h2 class="fw-bold text-success">
+                        10+
+                    </h2>
+                    <p class="text-muted">
+                        Enseignants
+                    </p>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <h2 class="fw-bold text-success">
+                        8
+                    </h2>
+                    <p class="text-muted">
+                        Niveaux disponibles
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+{% endblock %}
