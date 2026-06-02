@@ -27,3 +27,4 @@ yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 /src/Controller/ChildController.php
 /migrations/
+/backups/backup_20260602-1021.sql
