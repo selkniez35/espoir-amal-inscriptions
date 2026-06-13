@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\EnrollmentStatus;
 use App\Repository\EnrollmentRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -21,7 +22,7 @@ class Enrollment
     private ?EnrollmentStatus $status = EnrollmentStatus::PENDING;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createAt = null;
+    private ?DateTimeImmutable $createAt = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $notes = null;
@@ -55,12 +56,12 @@ class Enrollment
         $this->status = $status;
     }
 
-    public function getCreateAt(): ?\DateTimeImmutable
+    public function getCreateAt(): ?DateTimeImmutable
     {
         return $this->createAt;
     }
 
-    public function setCreateAt(\DateTimeImmutable $createAt): static
+    public function setCreateAt(DateTimeImmutable $createAt): static
     {
         $this->createAt = $createAt;
 
