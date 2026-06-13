@@ -24,16 +24,8 @@ class Child
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $level = null;
 
-    #[ORM\OneToOne(targetEntity: EmergencyContact::class, cascade: ['persist', 'remove'])]
-    private ?EmergencyContact $emergencyContact = null;
-
-    #[ORM\OneToOne(targetEntity: EmergencyContact::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?EmergencyContact $secondaryEmergencyContact = null;
-
-    #[ORM\OneToOne(targetEntity: Doctor::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Doctor $doctor = null;
+    #[ORM\OneToMany(mappedBy: 'child', targetEntity: EmergencyContact::class, cascade: ['persist', 'remove'])]
+    private Collection $emergencyContacts;
 
     public function getId(): ?int
     {
@@ -78,34 +70,14 @@ class Child
         return trim($this->firstName . ' ' . $this->lastName);
     }
 
-    public function getEmergencyContact(): ?EmergencyContact
+    public function getEmergencyContacts(): Collection
     {
-        return $this->emergencyContact;
+        return $this->emergencyContacts;
     }
 
-    public function setEmergencyContact(?EmergencyContact $emergencyContact): void
+    public function setEmergencyContacts(Collection $emergencyContacts): void
     {
-        $this->emergencyContact = $emergencyContact;
-    }
-
-    public function getSecondaryEmergencyContact(): ?EmergencyContact
-    {
-        return $this->secondaryEmergencyContact;
-    }
-
-    public function setSecondaryEmergencyContact(?EmergencyContact $secondaryEmergencyContact): void
-    {
-        $this->secondaryEmergencyContact = $secondaryEmergencyContact;
-    }
-
-    public function getDoctor(): ?Doctor
-    {
-        return $this->doctor;
-    }
-
-    public function setDoctor(?Doctor $doctor): void
-    {
-        $this->doctor = $doctor;
+        $this->emergencyContacts = $emergencyContacts;
     }
 
 

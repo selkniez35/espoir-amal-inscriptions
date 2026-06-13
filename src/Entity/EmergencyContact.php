@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\EmergencyContactTypeEnum;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -9,23 +10,26 @@ class EmergencyContact
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $firstName = null;
+    #[ORM\Column(length: 100)]
+    private string $firstName;
 
-    #[ORM\Column(length: 255)]
-    private ?string $lastName = null;
+    #[ORM\Column(length: 100)]
+    private string $lastName;
 
-    #[ORM\Column(length: 255)]
-    private ?string $phone = null;
+    #[ORM\Column(length: 30)]
+    private string $phone;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $relationship = null;
+    #[ORM\Column(enumType: EmergencyContactTypeEnum::class)]
+    private EmergencyContactTypeEnum $type;
+
+    #[ORM\ManyToOne(inversedBy: 'emergencyContacts')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Child $child = null;
 
     public function getId(): ?int
     {
@@ -77,14 +81,28 @@ class EmergencyContact
         $this->email = $email;
     }
 
-    public function getRelationship(): ?string
+    public function getType(): EmergencyContactTypeEnum
     {
-        return $this->relationship;
+        return $this->type;
     }
 
-    public function setRelationship(?string $relationship): void
+    public function setType(EmergencyContactTypeEnum $type): self
     {
-        $this->relationship = $relationship;
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getChild(): ?Child
+    {
+        return $this->child;
+    }
+
+    public function setChild(?Child $child): self
+    {
+        $this->child = $child;
+
+        return $this;
     }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Enum\EnrollmentStatus;
+use App\Enum\Season;
 use App\Repository\EnrollmentRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -35,6 +36,9 @@ class Enrollment
      */
     #[ORM\OneToMany(targetEntity: Payment::class, mappedBy: 'enrollment')]
     private Collection $payments;
+
+    #[ORM\Column(enumType: Season::class)]
+    private Season $season;
 
     public function __construct()
     {
@@ -121,4 +125,16 @@ class Enrollment
 
         return $this;
     }
+
+    public function getSeason(): Season
+    {
+        return $this->season;
+    }
+
+    public function setSeason(Season $season): void
+    {
+        $this->season = $season;
+    }
+
+
 }

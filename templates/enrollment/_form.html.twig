@@ -1,37 +1,52 @@
-{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+{{ form_start(form) }}
 
-    <div class="row g-3">
-        <div class="col-md-12">
-            <div class="form-floating mb-3">
-                {{ form_widget(form.child) }}
-                {{ form_label(form.child) }}
-                {{ form_errors(form.child) }}
-            </div>
-        </div>
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
 
-        {#
-            <div class="col-md-12">
-                <div class="form-floating mb-3">
-                    {{ form_widget(form.status) }}
-                    {{ form_label(form.status) }}
-                    {{ form_errors(form.status) }}
+        <h4 class="mb-3">Inscription</h4>
+
+        {{ form_row(form.child) }}
+        {{ form_row(form.season) }}
+        {{ form_row(form.notes) }}
+
+        <hr>
+
+        <h4 class="mb-3">Contacts d’urgence</h4>
+
+        {% for contact in form.emergencyContacts %}
+
+            <div class="border rounded p-3 mb-3">
+
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        {{ form_row(contact.firstName) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_row(contact.lastName) }}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ form_row(contact.phone) }}
+                    </div>
+
+                    <div class="col-md-6">
+                        {{ form_row(contact.email) }}
+                    </div>
+
+                    <div class="col-md-12">
+                        {{ form_row(contact.type) }}
+                    </div>
                 </div>
-            </div>
-        #}
 
-        <div class="col-md-12">
-            <div class="mb-3">
-                {{ form_label(form.notes, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
-                {{ form_widget(form.notes) }}
-                {{ form_errors(form.notes) }}
             </div>
-        </div>
-    </div>
 
-    <div class="d-grid gap-2 mt-4">
-        <button class="btn btn-success btn-lg rounded-pill shadow-sm">
-            <i class="fas fa-save me-2"></i>{{ button_label|default('Enregistrer l\'inscription') }}
+        {% endfor %}
+
+        <button class="btn btn-success w-100">
+            Valider l’inscription
         </button>
+
     </div>
+</div>
 
 {{ form_end(form) }}

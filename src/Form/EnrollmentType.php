@@ -3,13 +3,14 @@
 namespace App\Form;
 
 use App\Entity\Child;
-use App\Enum\EnrollmentStatus;
-use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use App\Entity\Enrollment;
+use App\Enum\Season;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EnrollmentType extends AbstractType
 {
@@ -18,35 +19,28 @@ class EnrollmentType extends AbstractType
         $builder
             ->add('child', EntityType::class, [
                 'class' => Child::class,
-                'label' => 'Élève',
                 'choice_label' => 'fullName',
-                'attr' => [
-                    'class' => 'form-select select2',
-                ],
+                'label' => 'Enfant',
+                'attr' => ['class' => 'form-select']
             ])
-            /*->add('status', EnumType::class, [
-                'class' => EnrollmentStatus::class,
-                'label' => 'Statut',
-                'choice_label' => fn (EnrollmentStatus $choice) => $choice->label(),
-                'attr' => [
-                    'class' => 'form-select',
-                ],
-            ])*/
-            ->add('notes', null, [
-                'label' => 'Notes / Observations',
-                'attr' => [
-                    'class' => 'form-control',
-                    'rows' => 4,
-                    'placeholder' => 'Ajoutez des précisions ici (facultatif)...',
-                ],
-            ])
-        ;
-    }
 
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults([
-            'data_class' => Enrollment::class,
-        ]);
+            ->add('season', EnumType::class, [
+                'class' => Season::class,
+                'label' => 'Année scolaire',
+                'choice_label' => fn(Season $choice) => $choice->value,
+                'attr' => ['class' => 'form-select']
+            ])
+
+            ->add('notes', TextareaType::class, [
+                'required' => false
+            ])
+
+            ->add('emergencyContacts', CollectionType::class, [
+                'entry_type' => EmergencyContactType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'label' => false
+            ]);
     }
 }
