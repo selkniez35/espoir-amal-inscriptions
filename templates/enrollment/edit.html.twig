@@ -1,13 +1,62 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Enrollment{% endblock %}
+{% block title %}Modifier l'inscription{% endblock %}
 
 {% block body %}
-    <h1>Edit Enrollment</h1>
 
-    {{ include('enrollment/_form.html.twig', {'button_label': 'Update'}) }}
+    {# HEADER #}
+    <section class="bg-primary bg-gradient text-white py-5">
+        <div class="container text-center py-4">
 
-    <a href="{{ path('app_enrollment_index') }}">back to list</a>
+            <h1 class="display-5 fw-bold mb-2">
+                ✏️ Modifier l'inscription
+            </h1>
 
-    {{ include('enrollment/_delete_form.html.twig') }}
+            <p class="lead mb-0">
+                Mettez à jour les informations de l'inscription.
+            </p>
+
+        </div>
+    </section>
+
+    {# CONTENT #}
+    <section class="py-5">
+        <div class="container">
+
+            <div class="row justify-content-center">
+
+                <div class="col-lg-8">
+
+                    <div class="card border-0 shadow-sm rounded-4">
+
+                        <div class="card-body p-4">
+
+                            <h2 class="fw-bold mb-4">
+                                <i class="fas fa-edit text-primary me-2"></i>Détails de l'inscription
+                            </h2>
+
+                            {{ include('enrollment/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+
+                        <a href="{{ path('app_enrollment_index') }}"
+                           class="btn btn-outline-secondary rounded-pill px-4">
+                            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                        </a>
+
+                        {{ include('enrollment/_delete_form.html.twig') }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
 {% endblock %}

@@ -21,7 +21,7 @@ final class HomeController extends AbstractController
     ): Response {
 
         if ($this->isGranted(UserRole::ADMIN->value)) {
-            return $this->render('home/admin/index.html.twig', [
+            return $this->render('home/index.html.twig', [
                 'totalChildren' => $childRepository->count([]),
                 'totalEnrollments' => $enrollmentRepository->count([]),
                 'pendingEnrollments' => $enrollmentRepository->count(['status' => EnrollmentStatus::PENDING->value]),
@@ -31,7 +31,7 @@ final class HomeController extends AbstractController
                 'latestEnrollments' => $enrollmentRepository->findBy([], ['createAt' => 'DESC'], 5),
             ]);
         }else{
-            return $this->render('home/user/index.html.twig');
+            return $this->render('home/index.html.twig');
         }
 
     }

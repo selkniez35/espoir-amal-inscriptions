@@ -16,15 +16,29 @@ class EnrollmentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('status', EnumType::class, [
-                'class' => EnrollmentStatus::class,
-                'choice_label' => fn (EnrollmentStatus $choice) => $choice->label(),
-            ])
-            ->add('notes')
             ->add('child', EntityType::class, [
                 'class' => Child::class,
-                'label' => 'Elève',
+                'label' => 'Élève',
                 'choice_label' => 'fullName',
+                'attr' => [
+                    'class' => 'form-select select2',
+                ],
+            ])
+            /*->add('status', EnumType::class, [
+                'class' => EnrollmentStatus::class,
+                'label' => 'Statut',
+                'choice_label' => fn (EnrollmentStatus $choice) => $choice->label(),
+                'attr' => [
+                    'class' => 'form-select',
+                ],
+            ])*/
+            ->add('notes', null, [
+                'label' => 'Notes / Observations',
+                'attr' => [
+                    'class' => 'form-control',
+                    'rows' => 4,
+                    'placeholder' => 'Ajoutez des précisions ici (facultatif)...',
+                ],
             ])
         ;
     }
