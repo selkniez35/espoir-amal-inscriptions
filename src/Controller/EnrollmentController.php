@@ -34,7 +34,6 @@ final class EnrollmentController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-
             $enrollment->setCreateAt(new DateTimeImmutable());
             $this->enrollmentRepository->save($enrollment);
 

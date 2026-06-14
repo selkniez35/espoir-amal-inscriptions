@@ -24,8 +24,16 @@ class Child
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $level = null;
 
-    #[ORM\OneToMany(mappedBy: 'child', targetEntity: EmergencyContact::class, cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'children')]
+    private ?User $user = null;
+
+    #[ORM\OneToMany(targetEntity: EmergencyContact::class, mappedBy: 'child', cascade: ['persist', 'remove'])]
     private Collection $emergencyContacts;
+
+    public function __construct()
+    {
+        $this->emergencyContacts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -80,5 +88,35 @@ class Child
         $this->emergencyContacts = $emergencyContacts;
     }
 
+    public function addEmergencyContact(EmergencyContact $contact): self
+    {
+        if (!$this->emergencyContacts->contains($contact)) {
+            $this->emergencyContacts->add($contact);
+            $contact->setChild($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEmergencyContact(EmergencyContact $contact): self
+    {
+        if ($this->emergencyContacts->removeElement($contact)) {
+            if ($contact->getChild() === $this) {
+                $contact->setChild(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): void
+    {
+        $this->user = $user;
+    }
 
 }

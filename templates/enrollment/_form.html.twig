@@ -1,52 +1,24 @@
 {{ form_start(form) }}
 
-<div class="card shadow-sm border-0">
-    <div class="card-body p-4">
+    <h4>Inscription</h4>
 
-        <h4 class="mb-3">Inscription</h4>
-
+    <div class="card p-3 mb-3">
+        <h5>Enfant</h5>
         {{ form_row(form.child) }}
-        {{ form_row(form.season) }}
-        {{ form_row(form.notes) }}
-
-        <hr>
-
-        <h4 class="mb-3">Contacts d’urgence</h4>
-
-        {% for contact in form.emergencyContacts %}
-
-            <div class="border rounded p-3 mb-3">
-
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        {{ form_row(contact.firstName) }}
-                    </div>
-                    <div class="col-md-6">
-                        {{ form_row(contact.lastName) }}
-                    </div>
-
-                    <div class="col-md-6">
-                        {{ form_row(contact.phone) }}
-                    </div>
-
-                    <div class="col-md-6">
-                        {{ form_row(contact.email) }}
-                    </div>
-
-                    <div class="col-md-12">
-                        {{ form_row(contact.type) }}
-                    </div>
-                </div>
-
-            </div>
-
-        {% endfor %}
-
-        <button class="btn btn-success w-100">
-            Valider l’inscription
-        </button>
-
     </div>
-</div>
+
+    <div class="card p-3 mb-3">
+        <h5>Année scolaire</h5>
+        {{ form_row(form.season) }}
+    </div>
+
+    <div class="card p-3 mb-3">
+        <h5>Notes</h5>
+        {{ form_row(form.notes) }}
+    </div>
+
+    <button class="btn btn-primary w-100">
+        Valider
+    </button>
 
 {{ form_end(form) }}
